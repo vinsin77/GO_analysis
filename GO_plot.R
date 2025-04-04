@@ -1,17 +1,17 @@
-setwd("C:/Users/Gulee/OneDrive - University of Edinburgh/Attachments/New_PhD/GWAS_TWAS")
+
 #BiocManager::install(c("clusterProfiler", "org.Hs.eg.db", "enrichplot", "ggplot2"))
 
 library(clusterProfiler)
 library(org.Hs.eg.db)  # Use appropriate organism database (e.g., org.Mm.eg.db for mice)
 library(enrichplot)
 library(ggplot2)
-#genes_of_interest <- c("TET2", "FUT2", "BAMBI", "POLE", "MLH1", "MSH2", "MUTYH", "APC", "BRCA1", "BRIP1")  # Replace with your genes
-genes_of_interest <- read.table("ukbb/gene_list.txt")
+#genes_of_interest <- c("TET2", "FUT2", "BAMBI", "POLE", "MLH1", "MSH2", "MUTYH", "APC", "BRCA1", "BRIP1")  # test genes
+genes_of_interest <- read.table("gene_list.txt") ##the gene list
 genes_of_interest <- genes_of_interest$V1  # Convert from data frame to vector
 genes_of_interest <- trimws(genes_of_interest)  # Remove leading/trailing spaces
 valid_symbols <- keys(org.Hs.eg.db, keytype = "SYMBOL")
 sum(genes_of_interest %in% valid_symbols)
-##if some genes are missing
+##if some genes are missing, try to find other names
 missing_genes <- genes_of_interest[!(genes_of_interest %in% valid_symbols)]
 missing_genes
 alias_info <- AnnotationDbi::select(org.Hs.eg.db, keys = "COLCA2", keytype = "SYMBOL", columns = c("SYMBOL", "ALIAS"))
@@ -65,7 +65,7 @@ df$Converted_Genes <- sapply(df$geneID, function(id_string) {
 head(df)
 goplot(ego)  ##connected plot
 
-write.table(df, "ukbb/GO_analysis.tsv", sep='\t', row.names = F)
+write.table(df, "GO_analysis.tsv", sep='\t', row.names = F)
 
 # Extract the row for the specific GO term (adjust term as needed)
 specific_GO_term <- subset(ego@result, ID == "GO:1902893")  # Use the actual GO term ID
